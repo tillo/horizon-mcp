@@ -1,58 +1,35 @@
 include:
   - project: mdapi/ci-templates
+    file: /buildkit-before-script.yml
+    ref: main
+  - project: mdapi/ci-templates
+    file: /build.yml
+    ref: main
+  - project: mdapi/ci-templates
     file: /secret-scan.yml
     ref: main
 
 stages:
   - build
+  - tag
   - scan
   - notify
 
 buildkit:
-  image:
-    name: ${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/moby/buildkit:rootless
-    entrypoint: [""]
-  stage: build
-  tags:
-    - mdapi
+  extends: .buildkit-build
   variables:
-    BUILDKITD_FLAGS: --oci-worker-no-process-sandbox
-    CACHE_IMAGE: $CI_REGISTRY_IMAGE:cache
-  before_script:
-    - mkdir -p ~/.docker
-    - |
-      echo "{
-        \"auths\": {
-          \"${CI_REGISTRY}\": {
-            \"auth\": \"$(printf "%s:%s" "${CI_REGISTRY_USER}" "${CI_REGISTRY_PASSWORD}" | base64 | tr -d '\n')\"
-          },
-          \"$(echo -n $CI_DEPENDENCY_PROXY_SERVER | awk -F[:] '{print $1}')\": {
-            \"auth\": \"$(printf "%s:%s" ${CI_DEPENDENCY_PROXY_USER} "${CI_DEPENDENCY_PROXY_PASSWORD}" | base64 | tr -d '\n')\"
-          }
-        }
-      }" > ~/.docker/config.json
-  script:
-    - |
-      buildctl-daemonless.sh build \
-        --frontend dockerfile.v0 \
-        --local context=. \
-        --local dockerfile=. \
-        --export-cache type=registry,ref=$CACHE_IMAGE \
-        --import-cache type=registry,ref=$CACHE_IMAGE \
-        --opt platform=linux/amd64 \
-        --opt build-arg:CACHEBUST_DAY=$(date +%Y%m%d) \
-        --opt build-arg:REGISTRY=$(echo "${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}" | sed "s|:443||")/ \
-        --progress=plain \
-        --output type=image,\"name=$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA,$CI_REGISTRY_IMAGE:latest\",push=true \
-        > build.log 2>&1
-      EXIT_CODE=$?
-      cat build.log
-      exit $EXIT_CODE
-  artifacts:
-    when: always
-    paths:
-      - build.log
-    expire_in: 1 hour
+    # Route the base image (FROM ${REGISTRY}node:...) through the group dependency
+    # proxy in CI. ARG REGISTRY defaults to empty so the same Dockerfile still builds
+    # from Docker Hub in the GitHub Actions workflow.
+    BUILD_ARGS: "--opt build-arg:REGISTRY=${CI_DEPENDENCY_PROXY_GROUP_IMAGE_PREFIX}/"
+
+# Mints :<mcp-version>-mdapi.<pipeline> from /etc/image-version (see Dockerfile),
+# pointing at the same digest. Lane-B / Renovate consumers; :latest stays floating
+# for Keel.
+version-tag:
+  extends: .version-tag
+  needs:
+    - buildkit
 
 # SBOM (Syft) + vuln scan (Grype). Non-blocking; pushover only on HIGH/CRITICAL.
 scan:
