@@ -75,20 +75,32 @@ ignore:
     package:
       name: perl-base
       type: deb
-
-  # --- added by curator on 2026-10-09 (UTC) ---
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-102010
     package:
       name: gcc-12-base
       type: deb
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-102010
     package:
       name: libgcc-s1
       type: deb
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-102010
+    package:
+      name: libstdc++6
+      type: deb
+
+  # --- added by curator on 2026-10-11 (UTC) ---
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-95619
+    package:
+      name: gcc-12-base
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-95619
+    package:
+      name: libgcc-s1
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-95619
     package:
       name: libstdc++6
       type: deb
