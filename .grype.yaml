@@ -35,14 +35,6 @@ ignore:
     package:
       name: ncurses-bin
       type: deb
-  - vulnerability: CVE-2026-42496
-    package:
-      name: perl-base
-      type: deb
-  - vulnerability: CVE-2026-42497
-    package:
-      name: perl-base
-      type: deb
   - vulnerability: CVE-2026-5435
     package:
       name: libc-bin
@@ -66,10 +58,6 @@ ignore:
   - vulnerability: CVE-2026-5928
     package:
       name: libc6
-      type: deb
-  - vulnerability: CVE-2026-8376
-    package:
-      name: perl-base
       type: deb
   - vulnerability: CVE-2026-9538
     package:
@@ -99,24 +87,18 @@ ignore:
     package:
       name: libstdc++6
       type: deb
-
-  # --- added by curator on 2026-10-13 (UTC) ---
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-107778
     package:
       name: libgssapi-krb5-2
       type: deb
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-107778
     package:
       name: libk5crypto3
       type: deb
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-107778
     package:
       name: libkrb5-3
       type: deb
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-107778
     package:
       name: libkrb5support0
