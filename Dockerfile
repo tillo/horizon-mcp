@@ -2,12 +2,12 @@
 # HTTP/SSE) behind an nginx bearer-token gate — a single self-contained image, so
 # the MCP can be reached over the network instead of only locally over stdio.
 #
-# Public default pulls node:24-bookworm-slim straight from Docker Hub. In CI with a
+# Public default pulls node:24-trixie-slim straight from Docker Hub. In CI with a
 # registry pull-through cache (e.g. the GitLab dependency proxy), pass
 #   --build-arg REGISTRY=<cache-prefix>/
 # to route the base image through it.
 ARG REGISTRY=
-FROM ${REGISTRY}node:24-bookworm-slim
+FROM ${REGISTRY}node:24-trixie-slim
 
 # CACHEBUST_DAY (CI passes $(date +%Y%m%d)) invalidates this layer once per day so
 # `apt upgrade` picks up freshly-published security patches.
