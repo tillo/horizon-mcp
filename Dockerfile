@@ -26,7 +26,7 @@ RUN echo "cache day: ${CACHEBUST_DAY}" && \
 ARG SUPERGATEWAY_VERSION=4.2.1
 ARG MCP_PACKAGE=@evertrust/horizon-mcp
 # renovate: datasource=npm depName=@evertrust/horizon-mcp
-ARG MCP_VERSION=1.2.0
+ARG MCP_VERSION=3.1.3
 RUN npm install -g "supergateway@${SUPERGATEWAY_VERSION}" "${MCP_PACKAGE}@${MCP_VERSION}" && \
     npm cache clean --force
 
