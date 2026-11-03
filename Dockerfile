@@ -7,7 +7,7 @@
 #   --build-arg REGISTRY=<cache-prefix>/
 # to route the base image through it.
 ARG REGISTRY=
-FROM ${REGISTRY}node:24-trixie-slim
+FROM ${REGISTRY}node:26-trixie-slim
 
 # CACHEBUST_DAY (CI passes $(date +%Y%m%d)) invalidates this layer once per day so
 # `apt upgrade` picks up freshly-published security patches.
