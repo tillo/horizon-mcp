@@ -25,8 +25,11 @@ RUN echo "cache day: ${CACHEBUST_DAY}" && \
 # renovate: datasource=npm depName=supergateway
 ARG SUPERGATEWAY_VERSION=4.2.1
 ARG MCP_PACKAGE=@evertrust/horizon-mcp
+# Held on the 2.x line (renovate.json allowedVersions <3): 3.x speaks only MCP
+# 2026-07-28 and refuses supergateway's initialize (infra-ik4p.27); smoke.mjs below
+# fails the build if a version cannot serve a 2025-11-25 client.
 # renovate: datasource=npm depName=@evertrust/horizon-mcp
-ARG MCP_VERSION=3.1.3
+ARG MCP_VERSION=2.1.2
 RUN npm install -g "supergateway@${SUPERGATEWAY_VERSION}" "${MCP_PACKAGE}@${MCP_VERSION}" && \
     npm cache clean --force
 
