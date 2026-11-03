@@ -56,5 +56,18 @@ ENV MCP_BIN=horizon-mcp \
     HOME=/tmp \
     npm_config_cache=/tmp/.npm
 
+# Smoke test (fails the build): bridge the MCP exactly as start.sh does and speak to
+# it as a 2025-11-25 client — initialize, then tools/list must return tools. A
+# package that refuses supergateway's initialize handshake (horizon-mcp 3.x is
+# 2026-07-28-only) builds and starts fine yet serves nothing. The HORIZON_* values
+# are dummies: horizon-mcp authenticates on the first tool call, not at start.
+COPY smoke.mjs /app/smoke.mjs
+RUN HORIZON_URL=https://127.0.0.1:9 HORIZON_API_ID=smoke HORIZON_API_KEY=smoke; \
+    export HORIZON_URL HORIZON_API_ID HORIZON_API_KEY; \
+    supergateway --stdio "${MCP_BIN}" --outputTransport streamableHttp --port 9099 \
+      ${SUPERGATEWAY_FLAGS} >/tmp/smoke-gateway.log 2>&1 & gw=$!; \
+    node /app/smoke.mjs 9099; rc=$?; kill "$gw"; \
+    [ "$rc" = 0 ] || tail -20 /tmp/smoke-gateway.log; rm -f /tmp/smoke-gateway.log; exit "$rc"
+
 EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--", "/app/start.sh"]
