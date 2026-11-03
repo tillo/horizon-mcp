@@ -25,10 +25,29 @@ RUN echo "cache day: ${CACHEBUST_DAY}" && \
 # renovate: datasource=npm depName=supergateway
 ARG SUPERGATEWAY_VERSION=4.2.1
 ARG MCP_PACKAGE=@evertrust/horizon-mcp
+# Held on the 2.x line (renovate.json allowedVersions <3): 3.x speaks only MCP
+# 2026-07-28 and refuses supergateway's initialize (infra-ik4p.27); smoke.mjs below
+# fails the build if a version cannot serve a 2025-11-25 client.
 # renovate: datasource=npm depName=@evertrust/horizon-mcp
-ARG MCP_VERSION=3.1.3
-RUN npm install -g "supergateway@${SUPERGATEWAY_VERSION}" "${MCP_PACKAGE}@${MCP_VERSION}" && \
-    npm cache clean --force
+ARG MCP_VERSION=2.1.2
+# Installed as a local project, not `npm install -g`: both packages pin some of their
+# own dependencies exactly (MCP SDK, undici, ...), so a fix inside the same major
+# never arrived, and npm applies `overrides` only to a project. float-pins.js turns
+# each exact pin into a scoped `^x.y.z` override and the second install takes the
+# newest fix; the daily CACHEBUST above re-runs it. npm itself is removed afterwards:
+# nothing runs it at runtime, and its bundled copies were the image's other npm CVEs.
+COPY float-pins.js /tmp/float-pins.js
+WORKDIR /opt/mcp
+RUN printf '{"private":true,"dependencies":{"supergateway":"%s","%s":"%s"}}\n' \
+      "${SUPERGATEWAY_VERSION}" "${MCP_PACKAGE}" "${MCP_VERSION}" > package.json && \
+    npm install --omit=dev --ignore-scripts --no-audit --no-fund && \
+    node /tmp/float-pins.js . && rm -rf node_modules package-lock.json && \
+    npm install --omit=dev --ignore-scripts --no-audit --no-fund && \
+    npm ls --all --omit=dev >/dev/null && \
+    npm cache clean --force && \
+    rm -rf /tmp/float-pins.js /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+      /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /tmp/.npm /root/.npm
+ENV PATH=/opt/mcp/node_modules/.bin:${PATH}
 
 # Declare the meaningful version (consumed by the optional CI version-tag job).
 RUN echo "${MCP_VERSION}" > /etc/image-version
@@ -53,8 +72,20 @@ ENV MCP_BIN=horizon-mcp \
     SUPERGATEWAY_FLAGS="--stateful --sessionTimeout 600000" \
     LISTEN_PORT=8080 \
     INTERNAL_PORT=9090 \
-    HOME=/tmp \
-    npm_config_cache=/tmp/.npm
+    HOME=/tmp
+
+# Smoke test (fails the build): bridge the MCP exactly as start.sh does and speak to
+# it as a 2025-11-25 client — initialize, then tools/list must return tools. A
+# package that refuses supergateway's initialize handshake (horizon-mcp 3.x is
+# 2026-07-28-only) builds and starts fine yet serves nothing. The HORIZON_* values
+# are dummies: horizon-mcp authenticates on the first tool call, not at start.
+COPY smoke.mjs /app/smoke.mjs
+RUN HORIZON_URL=https://127.0.0.1:9 HORIZON_API_ID=smoke HORIZON_API_KEY=smoke; \
+    export HORIZON_URL HORIZON_API_ID HORIZON_API_KEY; \
+    supergateway --stdio "${MCP_BIN}" --outputTransport streamableHttp --port 9099 \
+      ${SUPERGATEWAY_FLAGS} >/tmp/smoke-gateway.log 2>&1 & gw=$!; \
+    node /app/smoke.mjs 9099; rc=$?; kill "$gw"; \
+    [ "$rc" = 0 ] || tail -20 /tmp/smoke-gateway.log; rm -f /tmp/smoke-gateway.log; exit "$rc"
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--", "/app/start.sh"]

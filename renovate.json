@@ -15,6 +15,13 @@
   ],
   "packageRules": [
     {
+      "description": "HOLD the 2.x line of @evertrust/horizon-mcp (infra-ik4p.27). 3.x speaks only MCP 2026-07-28 and answers supergateway's initialize with -32022, so behind this image's bridge every client is rejected; the 3.1.3 major merged 2026-11-03 broke the live MCP and was rolled back. Lift this only together with a gateway that serves 2026-07-28 — the Dockerfile smoke test (smoke.mjs) proves it either way.",
+      "matchPackageNames": [
+        "@evertrust/horizon-mcp"
+      ],
+      "allowedVersions": "<3"
+    },
+    {
       "description": "GRADUATED — minor+patch (promoted by the graduation tick / Windmill f/desk/renovate_graduate). The baseline here is MR-only, so this list is the whole minor+patch automerge. Must sit above GRADUATED — major. `__none__` is a sentinel, not a package: it keeps an emptied list inert instead of matching everything.",
       "matchUpdateTypes": [
         "minor",
