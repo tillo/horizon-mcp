@@ -235,3 +235,15 @@ ignore:
     package:
       name: gcc-14-base
       type: deb
+
+  # --- added by curator on 2026-11-03 (UTC) ---
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-84243
+    package:
+      name: libc-bin
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-84243
+    package:
+      name: libc6
+      type: deb
