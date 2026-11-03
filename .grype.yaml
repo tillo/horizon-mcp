@@ -247,3 +247,13 @@ ignore:
     package:
       name: libc6
       type: deb
+
+  # supergateway 4.2.1 requires zod ^3.25.76 and 3.25.76 is the last 3.x: the fix
+  # exists only in 4.6.6, which supergateway cannot take. Reachable only behind the
+  # nginx bearer gate. Version-scoped so the MCP package's own zod 4 stays scanned;
+  # drop it when supergateway moves to zod 4 (infra-ik4p.27).
+  - vulnerability: GHSA-mrhx-c7xc-m3w5
+    package:
+      name: zod
+      version: 3.25.76
+      type: npm
