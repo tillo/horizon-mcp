@@ -21,7 +21,9 @@
         "patch"
       ],
       "matchPackageNames": [
-        "__none__"
+        "__none__",
+        "@evertrust/horizon-mcp",
+        "node"
       ],
       "automerge": true,
       "labels": [
@@ -36,7 +38,9 @@
         "digest"
       ],
       "matchPackageNames": [
-        "__none__"
+        "__none__",
+        "@evertrust/horizon-mcp",
+        "node"
       ],
       "automerge": true,
       "labels": [
