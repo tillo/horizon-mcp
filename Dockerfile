@@ -20,8 +20,12 @@ RUN echo "cache day: ${CACHEBUST_DAY}" && \
 
 # Bake supergateway + the MCP package so there is NO runtime `npm install` (the live
 # deployment used to install on every pod start — ~38s plus node-engine warnings).
-ARG SUPERGATEWAY_VERSION=latest
+# Both are pinned with a `# renovate:` line (renovate.json, infra-ik4p.1): supergateway
+# used to be `latest`, which every daily CACHEBUST rebuild moved without an MR.
+# renovate: datasource=npm depName=supergateway
+ARG SUPERGATEWAY_VERSION=4.2.1
 ARG MCP_PACKAGE=@evertrust/horizon-mcp
+# renovate: datasource=npm depName=@evertrust/horizon-mcp
 ARG MCP_VERSION=1.2.0
 RUN npm install -g "supergateway@${SUPERGATEWAY_VERSION}" "${MCP_PACKAGE}@${MCP_VERSION}" && \
     npm cache clean --force

@@ -1,0 +1,6 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "description": "Pins INSIDE the horizon-mcp image (infra-ik4p.1): the MCP package, supergateway and the node base. Runs from mdapi/fleet's `renovate` job, which lists this repo in RENOVATE_REPOSITORIES. The readers (Dockerfile FROM + the `# renovate:` ARG regex), the house core, OSV alerts and the dependency-proxy alias come from the shared preset local>mdapi/renovate-config:image-repo; do not set enabledManagers or postUpgradeTasks here, since a repo value REPLACES the preset's. MR-only: a merge here pushes :latest, and mdapi/fleet's digest MR for evertrust-mcp/horizon-mcp.yml can merge without a person, so nothing in this repo automerges.",
+  "extends": ["local>mdapi/renovate-config:image-repo"],
+  "automerge": false
+}
