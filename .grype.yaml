@@ -235,27 +235,42 @@ ignore:
     package:
       name: gcc-14-base
       type: deb
-
-  # --- added by curator on 2026-11-03 (UTC) ---
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-84243
     package:
       name: libc-bin
       type: deb
-  # High — upstream won't-fix
   - vulnerability: CVE-2026-84243
     package:
       name: libc6
       type: deb
-
-  # supergateway 4.2.1 requires zod ^3.25.76 and 3.25.76 is the last 3.x: the fix
-  # exists only in 4.6.6, which supergateway cannot take. Only its
-  # sse/streamableHttp UPSTREAM gateways (supergateway as a client of a remote
-  # server) call zod; this image runs --stdio, so no zod 3 parse ever happens.
-  # Version-scoped so the MCP package's own zod 4 stays scanned; drop it when
-  # supergateway moves to zod 4 (infra-ik4p.27).
   - vulnerability: GHSA-mrhx-c7xc-m3w5
     package:
       name: zod
-      version: 3.25.76
       type: npm
+
+  # --- added by curator on 2026-11-04 (UTC) ---
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-102010
+    package:
+      name: libatomic1
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-119373
+    package:
+      name: libsqlite3-0
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-119374
+    package:
+      name: libsqlite3-0
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-119379
+    package:
+      name: libsqlite3-0
+      type: deb
+  # High — upstream won't-fix
+  - vulnerability: CVE-2026-95619
+    package:
+      name: libatomic1
+      type: deb
