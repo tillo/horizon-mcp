@@ -1,0 +1,5 @@
+{
+  "private": true,
+  "description": "Repo-side tooling tests only; the image writes its own package.json in /opt/mcp.",
+  "scripts": { "test": "node --test" }
+}
