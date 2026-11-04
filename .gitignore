@@ -13,3 +13,5 @@ id_ecdsa*
 *.p12
 *.tsig
 .netrc
+.metrics/
+target/

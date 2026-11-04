@@ -36,7 +36,7 @@ ARG MCP_VERSION=2.1.2
 # each exact pin into a scoped `^x.y.z` override and the second install takes the
 # newest fix; the daily CACHEBUST above re-runs it. npm itself is removed afterwards:
 # nothing runs it at runtime, and its bundled copies were the image's other npm CVEs.
-COPY float-pins.js /tmp/float-pins.js
+COPY float-pins.js lift.json /tmp/
 WORKDIR /opt/mcp
 RUN printf '{"private":true,"dependencies":{"supergateway":"%s","%s":"%s"}}\n' \
       "${SUPERGATEWAY_VERSION}" "${MCP_PACKAGE}" "${MCP_VERSION}" > package.json && \
@@ -45,7 +45,7 @@ RUN printf '{"private":true,"dependencies":{"supergateway":"%s","%s":"%s"}}\n' \
     npm install --omit=dev --ignore-scripts --no-audit --no-fund && \
     npm ls --all --omit=dev >/dev/null && \
     npm cache clean --force && \
-    rm -rf /tmp/float-pins.js /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
+    rm -rf /tmp/float-pins.js /tmp/lift.json /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack \
       /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /tmp/.npm /root/.npm
 ENV PATH=/opt/mcp/node_modules/.bin:${PATH}
 

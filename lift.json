@@ -1,0 +1,6 @@
+{
+  "supergateway": {
+    "zod": "^4.6.6",
+    "_why": "GHSA-mrhx-c7xc-m3w5 (High) is fixed only in zod 4; supergateway 4.2.1 declares zod ^3.25.76, the MCP package already runs zod 4. Proof: the build's smoke.mjs (initialize + tools/list) and the live tools/list after rollout (infra-ik4p.26)."
+  }
+}
