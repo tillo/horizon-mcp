@@ -30,7 +30,8 @@
       "matchPackageNames": [
         "__none__",
         "@evertrust/horizon-mcp",
-        "node"
+        "node",
+        "supergateway"
       ],
       "automerge": true,
       "labels": [
@@ -47,7 +48,8 @@
       "matchPackageNames": [
         "__none__",
         "@evertrust/horizon-mcp",
-        "node"
+        "node",
+        "supergateway"
       ],
       "automerge": true,
       "labels": [
