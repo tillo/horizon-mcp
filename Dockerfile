@@ -23,7 +23,7 @@ RUN echo "cache day: ${CACHEBUST_DAY}" && \
 # Both are pinned with a `# renovate:` line (renovate.json, infra-ik4p.1): supergateway
 # used to be `latest`, which every daily CACHEBUST rebuild moved without an MR.
 # renovate: datasource=npm depName=supergateway
-ARG SUPERGATEWAY_VERSION=4.2.1
+ARG SUPERGATEWAY_VERSION=4.2.2
 ARG MCP_PACKAGE=@evertrust/horizon-mcp
 # Held on the 2.x line (renovate.json allowedVersions <3): 3.x speaks only MCP
 # 2026-07-28 and refuses supergateway's initialize (infra-ik4p.27); smoke.mjs below
