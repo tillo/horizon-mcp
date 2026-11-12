@@ -1,5 +1,1 @@
-ignore:
-  - vulnerability: GHSA-mrhx-c7xc-m3w5
-    package:
-      name: zod
-      type: npm
+ignore: []
