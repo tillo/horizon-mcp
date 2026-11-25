@@ -7,6 +7,19 @@
 #   --build-arg REGISTRY=<cache-prefix>/
 # to route the base image through it.
 ARG REGISTRY=
+
+# ---- IAST tracer (infra-7rog.41.11): dd-trace, Apache-2.0, installed into /opt/iast and
+# started ONLY by iast/iast-entry.sh when DD_IAST_ENABLED=true (QA cluster). Its own
+# stage, so it never touches the MCP's node_modules; exact pin (same as mdapi/backstage).
+FROM ${REGISTRY}node:26-trixie-slim AS iast
+# renovate: datasource=npm depName=dd-trace
+ARG DD_TRACE_VERSION=6.26.0
+RUN npm install --prefix /opt/iast --omit=dev --no-audit --no-fund "dd-trace@${DD_TRACE_VERSION}" && \
+    test -f /opt/iast/node_modules/dd-trace/init.js
+# The switch's behaviour test fails the build (this repo has no test job).
+COPY iast/ /tmp/iast/
+RUN sh /tmp/iast/iast-entry.test.sh
+
 FROM ${REGISTRY}node:26-trixie-slim
 
 # CACHEBUST_DAY (CI passes $(date +%Y%m%d)) invalidates this layer once per day so
@@ -87,5 +100,10 @@ RUN HORIZON_URL=https://127.0.0.1:9 HORIZON_API_ID=smoke HORIZON_API_KEY=smoke; 
     node /app/smoke.mjs 9099; rc=$?; kill "$gw"; \
     [ "$rc" = 0 ] || tail -20 /tmp/smoke-gateway.log; rm -f /tmp/smoke-gateway.log; exit "$rc"
 
+# Root-owned and read-only for the app user: the tracer is code, not state. NODE_OPTIONS
+# reaches supergateway AND the stdio MCP child it spawns (both node), never nginx.
+COPY --from=iast /opt/iast /opt/iast
+COPY iast/iast-entry.sh /usr/local/bin/iast-entry
+
 EXPOSE 8080
-ENTRYPOINT ["/usr/bin/tini", "--", "/app/start.sh"]
+ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/iast-entry", "/app/start.sh"]
