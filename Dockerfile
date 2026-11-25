@@ -103,7 +103,10 @@ RUN HORIZON_URL=https://127.0.0.1:9 HORIZON_API_ID=smoke HORIZON_API_KEY=smoke; 
 # Root-owned and read-only for the app user: the tracer is code, not state. NODE_OPTIONS
 # reaches supergateway AND the stdio MCP child it spawns (both node), never nginx.
 COPY --from=iast /opt/iast /opt/iast
-COPY iast/iast-entry.sh /usr/local/bin/iast-entry
+COPY --chmod=0755 iast/iast-entry.sh /usr/local/bin/iast-entry
+# The ENTRYPOINT itself must run: without --chmod the 0644 file made every pod die with
+# "tini: exec /usr/local/bin/iast-entry failed: Permission denied" (prod, 2026-11-25).
+RUN /usr/local/bin/iast-entry true
 
 EXPOSE 8080
 ENTRYPOINT ["/usr/bin/tini", "--", "/usr/local/bin/iast-entry", "/app/start.sh"]
