@@ -13,7 +13,7 @@ ARG REGISTRY=
 # stage, so it never touches the MCP's node_modules; exact pin (same as mdapi/backstage).
 FROM ${REGISTRY}node:26-trixie-slim AS iast
 # renovate: datasource=npm depName=dd-trace
-ARG DD_TRACE_VERSION=6.26.0
+ARG DD_TRACE_VERSION=6.27.0
 RUN npm install --prefix /opt/iast --omit=dev --no-audit --no-fund "dd-trace@${DD_TRACE_VERSION}" && \
     test -f /opt/iast/node_modules/dd-trace/init.js
 # The switch's behaviour test fails the build (this repo has no test job).
